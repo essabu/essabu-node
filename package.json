@@ -1,7 +1,7 @@
 {
   "name": "@essabu/sdk",
   "version": "1.0.0",
-  "description": "Essabu unified TypeScript SDK - Stripe-like API for billing, HR, accounting, and more",
+  "description": "Essabu unified TypeScript SDK - API for billing, HR, accounting, and more",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

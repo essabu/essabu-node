@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of @essabu/sdk
 - Unified client with 8 modules: HR, Accounting, Identity, Trade, Payment, E-Invoice, Project, Asset
-- Stripe-like API with lazy module initialization
+- API with lazy module initialization
 - Native fetch HTTP client (Node 18+)
 - Automatic retry with exponential backoff and jitter
 - Typed error hierarchy: EssabuError, NotFoundError, ValidationError, etc.
