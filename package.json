@@ -1,0 +1,130 @@
+{
+  "name": "@essabu/sdk",
+  "version": "1.0.0",
+  "description": "Official unified JavaScript/TypeScript SDK for the Essabu platform - HR, Accounting, Identity, Trade, Payment, E-Invoice, Project, and Asset management",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./hr": {
+      "types": "./dist/hr/index.d.ts",
+      "import": "./dist/hr/index.mjs",
+      "require": "./dist/hr/index.js"
+    },
+    "./accounting": {
+      "types": "./dist/accounting/index.d.ts",
+      "import": "./dist/accounting/index.mjs",
+      "require": "./dist/accounting/index.js"
+    },
+    "./identity": {
+      "types": "./dist/identity/index.d.ts",
+      "import": "./dist/identity/index.mjs",
+      "require": "./dist/identity/index.js"
+    },
+    "./trade": {
+      "types": "./dist/trade/index.d.ts",
+      "import": "./dist/trade/index.mjs",
+      "require": "./dist/trade/index.js"
+    },
+    "./payment": {
+      "types": "./dist/payment/index.d.ts",
+      "import": "./dist/payment/index.mjs",
+      "require": "./dist/payment/index.js"
+    },
+    "./einvoice": {
+      "types": "./dist/einvoice/index.d.ts",
+      "import": "./dist/einvoice/index.mjs",
+      "require": "./dist/einvoice/index.js"
+    },
+    "./project": {
+      "types": "./dist/project/index.d.ts",
+      "import": "./dist/project/index.mjs",
+      "require": "./dist/project/index.js"
+    },
+    "./asset": {
+      "types": "./dist/asset/index.d.ts",
+      "import": "./dist/asset/index.mjs",
+      "require": "./dist/asset/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist coverage",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --reporter=junit --outputFile=test-results.xml",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "prepack": "npm run build"
+  },
+  "keywords": [
+    "essabu",
+    "sdk",
+    "api",
+    "api-client",
+    "typescript",
+    "hr",
+    "human-resources",
+    "payroll",
+    "accounting",
+    "invoicing",
+    "identity",
+    "authentication",
+    "trade",
+    "crm",
+    "sales",
+    "inventory",
+    "payment",
+    "mobile-money",
+    "einvoice",
+    "e-invoicing",
+    "tax",
+    "compliance",
+    "project-management",
+    "asset-management",
+    "erp",
+    "saas",
+    "africa",
+    "drc",
+    "fintech"
+  ],
+  "author": "Essabu <dev@essabu.com> (https://essabu.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/essabu/essabu-node.git"
+  },
+  "homepage": "https://docs.essabu.com/sdks/node",
+  "bugs": {
+    "url": "https://github.com/essabu/essabu-node/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^8.56.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0"
+  }
+}
