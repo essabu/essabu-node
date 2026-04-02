@@ -15,6 +15,8 @@ CRM and commerce: customers, products, invoices, quotations, purchase orders, an
 
 ## CustomersApi
 
+Manages customer records with standard CRUD operations. Create customers with a name, email, phone, and tax ID. List customers with pagination and search, retrieve one by ID, update their details, or soft-delete them. Customer IDs are referenced by invoices, quotations, and payments.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Customer>>
 async retrieve(id: string): Promise<Customer>
@@ -25,6 +27,8 @@ async remove(id: string): Promise<void>
 
 ## ProductsApi
 
+Manages the product catalog with standard CRUD operations. Create products with a name, SKU, price, and currency. Products are referenced by invoice lines and purchase order lines. Supports pagination, searching by name or SKU, and sorting on the list endpoint.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Product>>
 async retrieve(id: string): Promise<Product>
@@ -34,6 +38,8 @@ async remove(id: string): Promise<void>
 ```
 
 ## InvoicesApi
+
+Manages sales invoices through their full lifecycle. Create invoices with a customer reference, due date, and line items. The `issue()` method finalizes the invoice and assigns an invoice number. The `markPaid()` method records payment with an optional paid date. The `cancel()` method voids the invoice with a reason. The `duplicate()` method creates a copy. The `sendByEmail()` method delivers the invoice to a specified or default email address.
 
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Invoice>>
@@ -60,6 +66,8 @@ async sendByEmail(id: string, email?: string): Promise<void>
 
 ## QuotationsApi
 
+Manages quotations (estimates) with CRUD operations and a conversion workflow. Create quotations with a customer, validity date, and line items. The `accept()` method marks the quotation as accepted by the customer. The `reject()` method records a rejection with an optional reason. The `convertToInvoice()` method creates a new invoice from the quotation data and returns the created Invoice. The `sendByEmail()` method delivers the quotation to the customer.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Quotation>>
 async retrieve(id: string): Promise<Quotation>
@@ -82,6 +90,8 @@ async sendByEmail(id: string, email?: string): Promise<void>
 
 ## PurchaseOrdersApi
 
+Manages purchase orders with CRUD operations and an approval workflow. Create purchase orders with a supplier reference and line items specifying product, quantity, and unit price. The `approve()` method transitions the order to approved status for fulfillment. The `receive()` method marks the order as received when goods arrive. The `cancel()` method voids the order with an optional reason.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<PurchaseOrder>>
 async retrieve(id: string): Promise<PurchaseOrder>
@@ -101,6 +111,8 @@ async cancel(id: string, reason?: string): Promise<PurchaseOrder>
 
 ## SuppliersApi
 
+Manages supplier records with standard CRUD operations. Create suppliers with a name, email, and contact details. Supplier IDs are referenced by purchase orders. Supports pagination and search on the list endpoint.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Supplier>>
 async retrieve(id: string): Promise<Supplier>
@@ -112,6 +124,8 @@ async remove(id: string): Promise<void>
 ## Code Examples
 
 ### Customer Management
+
+List customers with pagination, then create a new customer with a name, email, and phone number. The `create()` method returns the Customer object with its generated UUID. Customer records are referenced by invoices, quotations, and payments throughout the trade module.
 
 ```typescript
 import { Essabu } from 'essabu-node';
@@ -128,6 +142,8 @@ const customer = await client.trade.customers.create({
 
 ### Invoices
 
+Create a sales invoice with a customer reference, due date, and line items. Issue the invoice to finalize it and assign an invoice number, then send it to the client by email. Mark the invoice as paid when payment is received. Each lifecycle method returns the updated Invoice object with the new status.
+
 ```typescript
 const invoice = await client.trade.invoices.create({
   customerId: 'cust-uuid',
@@ -140,6 +156,8 @@ await client.trade.invoices.markPaid(invoice.id);
 ```
 
 ### Quotations
+
+Create a quotation with a customer reference, validity date, and line items. Send it to the customer by email for review. When the customer agrees, accept the quotation, then convert it directly into a sales invoice. The `convertToInvoice()` method returns the newly created Invoice object with all line items copied from the quotation.
 
 ```typescript
 const quote = await client.trade.quotations.create({
@@ -154,6 +172,8 @@ const invoice = await client.trade.quotations.convertToInvoice(quote.id);
 
 ### Purchase Orders
 
+Create a purchase order with a supplier reference and line items specifying the product, quantity, and unit price. Approve the order to authorize procurement, then mark it as received when goods arrive at the warehouse. Returns the updated PurchaseOrder object with the current status.
+
 ```typescript
 const po = await client.trade.purchaseOrders.create({
   supplierId: 'sup-uuid',
@@ -164,6 +184,8 @@ await client.trade.purchaseOrders.receive(po.id);
 ```
 
 ### Products and Suppliers
+
+Create products with a name, SKU, price, and currency for the product catalog. Create suppliers with a name and email for procurement management. Both are referenced by other trade resources -- products by invoice and purchase order lines, suppliers by purchase orders.
 
 ```typescript
 const product = await client.trade.products.create({

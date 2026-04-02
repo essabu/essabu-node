@@ -5,12 +5,21 @@
 import Essabu from '@essabu/sdk';
 
 async function main() {
+  /**
+   * Initialize the SDK client with API key and tenant ID. All subsequent API calls
+   * will be authenticated and scoped to this tenant automatically.
+   */
   const essabu = new Essabu({
     apiKey: process.env['ESSABU_API_KEY'] ?? '',
     tenantId: process.env['ESSABU_TENANT_ID'] ?? '',
   });
 
-  // Create a bank account
+  /**
+   * Create a bank account with a display name, bank name, account number, IBAN,
+   * currency, and default flag. Setting `isDefault` to true makes this the primary
+   * account for payment processing. Returns the created BankAccount object with
+   * a generated UUID.
+   */
   const bankAccount = await essabu.payment.bankAccounts.create({
     name: 'Main Business Account',
     bankName: 'First National Bank',
@@ -21,7 +30,12 @@ async function main() {
   });
   console.log(`Bank account created: ${bankAccount.name}`);
 
-  // Record a payment
+  /**
+   * Create an incoming payment specifying the type, amount, currency, payment method,
+   * customer reference, date, description, and linked bank account. Returns the created
+   * Payment object in pending status with a generated reference number. Throws a
+   * ValidationError if required fields are missing or the bank account ID is invalid.
+   */
   const payment = await essabu.payment.payments.create({
     type: 'incoming',
     amount: 5000,
@@ -34,11 +48,21 @@ async function main() {
   });
   console.log(`Payment ${payment.reference}: $${payment.amount} (${payment.statusLabel})`);
 
-  // Process the payment
+  /**
+   * Process the payment to execute it through the configured payment gateway. Transitions
+   * the payment status from pending to processed and records the processing timestamp.
+   * Returns the updated Payment object. Throws a ValidationError if the payment is
+   * not in pending status.
+   */
   const processed = await essabu.payment.payments.process(payment.id);
   console.log(`Payment processed at: ${processed.processedAt}`);
 
-  // List transactions
+  /**
+   * List recent transactions with pagination, sorted by date in descending order.
+   * Returns a PageResponse containing transaction records with type (credit/debit),
+   * amount, date, and description. Use this to build transaction history views or
+   * reconciliation dashboards.
+   */
   const { data: transactions } = await essabu.payment.transactions.list({
     pageSize: 5,
     sortBy: 'date',

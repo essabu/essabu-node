@@ -14,6 +14,8 @@ Chart of accounts, journal entries, fiscal years, taxes, and financial reports.
 
 ## AccountsApi
 
+Provides full CRUD operations for the chart of accounts. List accounts with pagination, retrieve a single account by ID, create a new account with a code, name, and type, update an existing account, or soft-delete it. All methods return the Account model except `remove()` which returns void.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Account>>
     // GET /api/accounting/accounts
@@ -33,6 +35,8 @@ async remove(id: string): Promise<void>
 
 ## JournalEntriesApi
 
+Manages double-entry journal entries with balanced debit and credit lines. In addition to standard CRUD operations, the `post_()` method transitions an entry from draft to posted status, making it immutable. The `reverse()` method creates a new reversing entry as of an optional date, useful for period-end corrections.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<JournalEntry>>
 async retrieve(id: string): Promise<JournalEntry>
@@ -49,6 +53,8 @@ async reverse(id: string, date?: string): Promise<JournalEntry>
 
 ## FiscalYearsApi
 
+Manages fiscal year periods for the organization. Create a fiscal year with start and end dates, then close it at period-end to prevent further journal entries. A closed fiscal year can be reopened if adjustments are needed. Listing returns all fiscal years with their open/closed status.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<FiscalYear>>
 async retrieve(id: string): Promise<FiscalYear>
@@ -63,6 +69,8 @@ async reopen(id: string): Promise<FiscalYear>
 
 ## TaxesApi
 
+Provides CRUD operations for tax rate definitions. Create tax entries with a name, rate, and type (percentage or fixed). These tax definitions are referenced by invoice lines and e-invoices to compute tax amounts automatically. Throws a `ConflictError` if you try to remove a tax that is in use.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Tax>>
 async retrieve(id: string): Promise<Tax>
@@ -72,6 +80,8 @@ async remove(id: string): Promise<void>
 ```
 
 ## ReportsApi
+
+Generates financial reports based on posted journal entries. The `balanceSheet()` method returns assets, liabilities, and equity as of a given date. The `incomeStatement()` method returns revenue and expenses for a date range. The `trialBalance()` method lists all accounts with their debit and credit totals as of a date. All three methods throw a `NotFoundError` if no fiscal year covers the requested period.
 
 ```typescript
 async balanceSheet(date?: string): Promise<BalanceSheet>
@@ -87,6 +97,8 @@ async trialBalance(date?: string): Promise<TrialBalance>
 ## Code Examples
 
 ### Chart of Accounts
+
+Create, list, update, and delete accounts in the chart of accounts. The `list()` method accepts optional pagination parameters and returns a `PageResponse` with the accounts array and metadata. The `create()` method requires a unique account code, a display name, a type (asset, liability, equity, revenue, expense), and an optional currency. The `update()` and `remove()` methods operate on a specific account by its UUID.
 
 ```typescript
 import { Essabu } from 'essabu-node';
@@ -105,6 +117,8 @@ await client.accounting.accounts.remove(account.id);
 ```
 
 ### Journal Entries
+
+Create a journal entry with a date, reference, and balanced debit/credit lines. Each line references an account ID and specifies either a debit or credit amount. After creation, post the entry to make it permanent in the ledger. Use `reverse()` to create a counter-entry as of a specified date for corrections.
 
 ```typescript
 const entry = await client.accounting.journalEntries.create({
@@ -125,6 +139,8 @@ await client.accounting.journalEntries.reverse(entry.id, '2026-03-31');
 
 ### Fiscal Years
 
+Create a fiscal year by providing a name and start/end date range. Close the fiscal year at period-end to lock it against further journal entries. Reopen it if you need to post late adjustments. Returns the updated FiscalYear object with its current status.
+
 ```typescript
 const fy = await client.accounting.fiscalYears.create({
   name: 'FY 2026',
@@ -137,6 +153,8 @@ await client.accounting.fiscalYears.reopen(fy.id);
 
 ### Taxes
 
+Create a tax definition with a display name, a percentage rate, and a type. The created tax can be referenced by invoice lines to automatically compute tax amounts. Returns the Tax object with its generated UUID.
+
 ```typescript
 const tax = await client.accounting.taxes.create({
   name: 'VAT 16%',
@@ -146,6 +164,8 @@ const tax = await client.accounting.taxes.create({
 ```
 
 ### Financial Reports
+
+Generate the three core financial reports. The balance sheet returns assets, liabilities, and equity totals as of a given date. The income statement returns revenue, expenses, and net income for a date range specified by `startDate` and `endDate`. The trial balance lists all accounts with their cumulative debit and credit balances as of a date.
 
 ```typescript
 const bs = await client.accounting.reports.balanceSheet('2026-03-31');

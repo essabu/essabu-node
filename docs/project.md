@@ -12,6 +12,8 @@ Project management: projects, tasks, and timesheets with workflow actions.
 
 ## ProjectsApi
 
+Provides full CRUD operations for projects along with archiving and member management. Create projects with a name, date range, and budget. The `archive()` and `unarchive()` methods toggle the project's archived state. The `addMember()` method assigns a user to the project with an optional role (e.g., developer, designer). The `removeMember()` method removes a user from the project team.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Project>>
     // GET /api/project/projects
@@ -43,6 +45,8 @@ async removeMember(id: string, userId: string): Promise<void>
 
 ## TasksApi
 
+Manages project tasks with CRUD operations and workflow transitions. Create tasks linked to a project with a title, optional assignee, priority, and due date. The `complete()` method marks a task as done. The `reopen()` method moves a completed task back to in-progress status. The `assign()` method reassigns the task to a different user by their ID.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<ProjectTask>>
     // GET /api/project/tasks
@@ -71,6 +75,8 @@ async assign(id: string, assigneeId: string): Promise<ProjectTask>
 
 ## TimesheetsApi
 
+Tracks time spent on tasks with CRUD operations and an approval workflow. Create timesheet entries with a task reference, user ID, date, and hours worked. The `approve()` method validates the time entry for billing and reporting. The `reject()` method returns the entry to the submitter with an optional reason for correction.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Timesheet>>
     // GET /api/project/timesheets
@@ -98,6 +104,8 @@ async reject(id: string, reason?: string): Promise<Timesheet>
 
 ### Project Lifecycle
 
+Create a project with a name, description, date range, and budget. Add team members with specific roles and remove them as needed. Archive completed projects to hide them from active listings, and unarchive them if work resumes. Returns the Project object with its generated UUID and current status.
+
 ```typescript
 import { Essabu } from 'essabu-node';
 
@@ -123,6 +131,8 @@ await client.project.projects.unarchive(project.id);
 
 ### Task Management
 
+Create a task within a project specifying the title, description, assignee, priority level, and due date. Reassign tasks to different team members, mark them as complete when finished, or reopen them if additional work is needed. List all tasks with pagination to build project boards or backlog views.
+
 ```typescript
 const task = await client.project.tasks.create({
   projectId: project.id,
@@ -143,6 +153,8 @@ const tasks = await client.project.tasks.list({ page: 1, pageSize: 50 });
 ```
 
 ### Timesheets
+
+Log time against a specific task by providing the task ID, user ID, date, hours worked, and a description. Approve timesheet entries for billing and reporting purposes, or reject them with a reason if the hours or description need correction. Returns the Timesheet object with the recorded hours and approval status.
 
 ```typescript
 const entry = await client.project.timesheets.create({
