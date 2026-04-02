@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: '22'
       - name: Install
-        run: npm ci 2>/dev/null || npm install
+        run: npm ci
       - name: TypeScript check
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit
       - name: Lint
-        run: npx eslint src/ --no-error-on-unmatched-pattern || true
+        run: npx eslint src/
