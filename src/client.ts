@@ -13,7 +13,7 @@ import { AssetClient } from './asset/client';
 /**
  * Essabu unified SDK client.
  *
- * Provides a Stripe-like API for accessing all Essabu platform modules.
+ * Provides a API for accessing all Essabu platform modules.
  *
  * @example
  * ```typescript

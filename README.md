@@ -1,6 +1,6 @@
 # @essabu/sdk
 
-Unified TypeScript SDK for the Essabu platform. Stripe-like API with zero runtime dependencies. Requires Node.js 18+.
+Unified TypeScript SDK for the Essabu platform. API with zero runtime dependencies. Requires Node.js 18+.
 
 ## Installation
 
