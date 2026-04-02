@@ -10,6 +10,8 @@ Electronic invoicing: create, submit to tax authorities, validate, and download 
 
 ## EInvoicesApi
 
+Manages the full e-invoice lifecycle from creation through submission to tax authorities. List e-invoices with pagination, retrieve one by ID, create a new e-invoice linked to a trade invoice, or delete a draft. The `submit()` method sends the e-invoice to the tax authority and returns the updated status. The `validate()` method checks compliance before submission. Download the e-invoice in XML or PDF format for archiving or sharing.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<EInvoice>>
     // GET /api/einvoice/einvoices
@@ -39,6 +41,8 @@ async downloadPdf(id: string): Promise<string>
 ## Code Examples
 
 ### Create and Submit an E-Invoice
+
+Create an e-invoice by providing the linked trade invoice ID, the customer's tax identification number (TIN), the customer name, an array of line items with descriptions, quantities, unit prices and tax rates, and the currency. After creation, validate the e-invoice to check for compliance errors, then submit it to the tax authority. The `submit()` method transitions the e-invoice status to "submitted".
 
 ```typescript
 import { Essabu } from 'essabu-node';
@@ -72,6 +76,8 @@ console.log(submitted.status); // "submitted"
 
 ### Download Formats
 
+Download the e-invoice in XML format for machine-readable archiving and tax authority integration, or in PDF format for human-readable printing and email distribution. Both methods accept the e-invoice ID and return the file content as a string. Throws a `NotFoundError` if the e-invoice does not exist.
+
 ```typescript
 // Download XML representation
 const xml = await client.einvoice.einvoices.downloadXml(einvoice.id);
@@ -81,6 +87,8 @@ const pdf = await client.einvoice.einvoices.downloadPdf(einvoice.id);
 ```
 
 ### List and Filter
+
+Retrieve a paginated list of all e-invoices, fetch a specific e-invoice by its UUID, or delete a draft e-invoice that has not yet been submitted. The `list()` method supports standard pagination parameters. The `remove()` method throws a `ValidationError` if the e-invoice has already been submitted to the tax authority.
 
 ```typescript
 // List all e-invoices
@@ -94,6 +102,8 @@ await client.einvoice.einvoices.remove('einv-uuid');
 ```
 
 ### Validation Workflow
+
+Implement a safe submission workflow by validating the e-invoice before sending it to the tax authority. Create the e-invoice as a draft, call `validate()` to check for compliance errors, and only proceed with `submit()` if the validation result is valid. If validation fails, inspect the `errors` array for details about what needs to be corrected.
 
 ```typescript
 // Create, validate, then submit

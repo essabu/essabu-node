@@ -21,6 +21,8 @@ Creates a new SDK client instance.
 
 All resource APIs follow the same pattern:
 
+Every resource exposes five standard methods: `list()` for paginated retrieval, `retrieve()` for fetching a single item by ID, `create()` for adding a new resource, `update()` for partial modification, and `remove()` for soft-deletion. All methods return typed Promises. The `list()` method returns a `PageResponse<T>` wrapper containing both data and pagination metadata.
+
 ```typescript
 // List with pagination
 const { data, meta } = await essabu.module.resource.list({ page: 1, pageSize: 25 });
@@ -39,6 +41,8 @@ await essabu.module.resource.remove('id');
 ```
 
 ### Pagination
+
+The `PageRequest` interface defines all pagination, sorting, searching, and filtering parameters. Page numbers are 1-based, and the default page size is 25 with a maximum of 100. The `PageResponse<T>` generic wrapper contains the typed data array and a `meta` object with full pagination state including total counts and navigation booleans.
 
 ```typescript
 interface PageRequest {

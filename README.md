@@ -37,6 +37,8 @@ The official Node.js/TypeScript SDK for the [Essabu](https://essabu.com) platfor
 
 ## Installation
 
+Install the SDK using your preferred package manager. The package has zero runtime dependencies and requires Node.js 18 or later. TypeScript 5.3+ is recommended but optional -- the SDK ships compiled JavaScript alongside type definitions.
+
 ```bash
 # npm
 npm install @essabu/sdk
@@ -53,6 +55,8 @@ pnpm add @essabu/sdk
 ---
 
 ## Quick Start
+
+Initialize the SDK client with your API key and tenant ID, then call any module through dot notation. Each module method returns a typed Promise that resolves to the created or fetched resource. The example below demonstrates creating an employee, an invoice, generating a balance sheet, listing users, processing a payment, creating an e-invoice, setting up a project with a task, and registering a fixed asset.
 
 ```typescript
 import Essabu from '@essabu/sdk';
@@ -124,6 +128,8 @@ const asset = await essabu.asset.assets.create({
 
 ## Configuration
 
+Create an Essabu client instance by passing a configuration object. The `apiKey` and `tenantId` fields are required. All other options have sensible defaults -- you can override the base URL, request timeout, retry count, API version, and inject custom headers that will be sent with every request.
+
 ```typescript
 const essabu = new Essabu({
   apiKey: 'esa_live_xxx',            // Required
@@ -139,6 +145,8 @@ const essabu = new Essabu({
 ```
 
 ### Environment Variables
+
+You can load configuration values from environment variables instead of hardcoding them. This is the recommended approach for production deployments. The non-null assertion operator (`!`) tells TypeScript the value will be defined at runtime.
 
 ```typescript
 import Essabu from '@essabu/sdk';
@@ -167,6 +175,8 @@ const essabu = new Essabu({
 ## TypeScript Support
 
 The SDK is written in TypeScript and ships with full type definitions. All models, request parameters, and responses are typed:
+
+Import the SDK along with the specific model and pagination types you need. The generic `PageResponse<T>` wrapper provides typed access to both the data array and pagination metadata. All create and update methods enforce required fields at compile time, so missing parameters are caught before runtime.
 
 ```typescript
 import Essabu from '@essabu/sdk';
@@ -200,6 +210,8 @@ All modules are accessed via dot notation. They are lazy-loaded -- only initiali
 
 Employees, departments, contracts, payroll, attendance, and leaves.
 
+Manage the full employee lifecycle from creation through activation and termination. Run payroll for a given period and department, then process and approve the run to generate pay slips. Create leave requests and approve them, and track daily attendance with check-in and check-out. Create, sign, and renew employment contracts.
+
 ```typescript
 // Employee lifecycle
 const emp = await essabu.hr.employees.create({ firstName: 'Jean', lastName: 'Dupont', email: 'jean@co.com' });
@@ -231,6 +243,8 @@ await essabu.hr.contracts.sign(contract.id);
 
 Accounts, journal entries, fiscal years, taxes, and financial reports.
 
+Create accounts in the chart of accounts, then record double-entry journal entries with balanced debit and credit lines. Generate financial reports -- balance sheet as of a specific date, income statement for a date range, and trial balance -- to get a snapshot of the organization's financial position.
+
 ```typescript
 // Chart of accounts
 const account = await essabu.accounting.accounts.create({ code: '4010', name: 'Sales', type: 'revenue' });
@@ -252,6 +266,8 @@ const pnl = await essabu.accounting.reports.incomeStatement('2026-01-01', '2026-
 
 Auth, users, roles, and tenants.
 
+Authenticate users with email and password to receive access and refresh tokens. Create new user accounts, define roles with granular permissions, and manage the current tenant. The `me()` method returns the currently authenticated user's profile.
+
 ```typescript
 const tokens = await essabu.identity.auth.login({ email: 'admin@co.com', password: 'secret' });
 const me = await essabu.identity.auth.me();
@@ -264,6 +280,8 @@ const role = await essabu.identity.roles.create({ name: 'Accountant', permission
 ### Trade
 
 Customers, suppliers, invoices, purchase orders, products, and quotations.
+
+Create customers and suppliers, then build invoices and purchase orders with line items. Invoices follow a lifecycle: create, issue, send by email, and mark as paid. Purchase orders can be approved and received. Quotations can be accepted, rejected, or converted directly into invoices.
 
 ```typescript
 const customer = await essabu.trade.customers.create({ name: 'ACME Corp', email: 'contact@acme.com' });
@@ -283,6 +301,8 @@ const po = await essabu.trade.purchaseOrders.create({
 
 Payments, bank accounts, and transactions.
 
+Record incoming and outgoing payments with a specified amount, currency, and method. List recent transactions with pagination, and register bank accounts for reconciliation. Payments can be processed, cancelled, or refunded after creation.
+
 ```typescript
 const payment = await essabu.payment.payments.create({ amount: 5000, currency: 'USD', method: 'mobile_money' });
 const { data: transactions } = await essabu.payment.transactions.list({ pageSize: 50 });
@@ -294,6 +314,8 @@ const account = await essabu.payment.bankAccounts.create({ name: 'Main Account',
 ### E-Invoice
 
 Electronic invoicing.
+
+Create an electronic invoice by linking it to an existing trade invoice, providing the customer's TIN, name, and itemized lines with tax rates. The e-invoice can then be validated and submitted to the tax authority. Returns the created EInvoice object with its assigned status and unique identifier.
 
 ```typescript
 const einvoice = await essabu.einvoice.einvoices.create({
@@ -308,6 +330,8 @@ const einvoice = await essabu.einvoice.einvoices.create({
 
 Projects, tasks, and timesheets.
 
+Create a project with a name, start date, and end date, then add tasks with a title and priority level. Log time entries against tasks for a specific user and date. Projects support member management, archiving, and task workflow actions like completion and reassignment.
+
 ```typescript
 const project = await essabu.project.projects.create({ name: 'Website Redesign', startDate: '2026-04-01', endDate: '2026-09-30' });
 const task = await essabu.project.tasks.create({ projectId: project.id, title: 'Design', priority: 'high' });
@@ -319,6 +343,8 @@ const entry = await essabu.project.timesheets.create({ taskId: task.id, userId: 
 ### Asset
 
 Assets, categories, and depreciations.
+
+Define asset categories with a depreciation method and useful life, then register individual fixed assets under those categories. Record periodic depreciation entries to track asset value over time. Assets can be activated, updated, and eventually disposed of.
 
 ```typescript
 const category = await essabu.asset.categories.create({ name: 'IT Equipment', depreciationMethod: 'straight_line', usefulLifeMonths: 60 });
@@ -333,6 +359,8 @@ const dep = await essabu.asset.depreciations.create({ assetId: asset.id, period:
 ## Pagination
 
 All `list()` methods support pagination, sorting, searching, and filtering.
+
+Retrieve a paginated list of resources by passing page number, page size, sort field, sort order, a search keyword, and optional filters. The response contains a `data` array with the matching items and a `meta` object with pagination metadata including the current page, total pages, total items, and navigation flags.
 
 ```typescript
 const { data, meta } = await essabu.trade.customers.list({
@@ -350,6 +378,8 @@ console.log(`Has next: ${meta.hasNextPage}`);
 ```
 
 ### Iterating All Pages
+
+Loop through all pages of a resource by incrementing the page number until `hasNextPage` is false. Each iteration fetches the next batch of results. This pattern is useful for data exports or synchronization tasks where you need to process every record.
 
 ```typescript
 let page = 1;
@@ -381,6 +411,8 @@ while (hasMore) {
 ## Error Handling
 
 The SDK provides a typed exception hierarchy. All errors extend `EssabuError`.
+
+Import the specific error classes you need to handle. Wrap your SDK calls in a try/catch block and use `instanceof` checks to determine the error type. Each error class exposes relevant properties -- `ValidationError` has a `violations` array, `RateLimitError` has a `retryAfter` value in seconds, and all errors include a `statusCode`, `message`, and optional `requestId` for debugging.
 
 ```typescript
 import Essabu, {
@@ -439,6 +471,8 @@ try {
 ## Webhooks
 
 Essabu sends webhook events signed with HMAC-SHA256. Verify the `X-Essabu-Signature` header before processing.
+
+Set up an Express endpoint to receive webhook events. Parse the raw request body and compute an HMAC-SHA256 signature using your webhook secret. Compare it against the `X-Essabu-Signature` header using a timing-safe comparison to prevent timing attacks. Once verified, parse the JSON payload and route events by their `type` field to the appropriate handler logic.
 
 ```typescript
 import express from 'express';
@@ -503,6 +537,8 @@ Complete examples are in the [`examples/`](examples/) directory.
 | [`07-project-management.ts`](examples/07-project-management.ts) | Project and task management | Project |
 | [`08-error-handling.ts`](examples/08-error-handling.ts) | Error handling patterns | General |
 
+To run an example, set the required environment variables and execute the file using `tsx`. Each example is self-contained and demonstrates a specific module's functionality. Replace the placeholder values with your actual API key and tenant ID.
+
 ```bash
 # Run an example
 export ESSABU_API_KEY=esa_test_xxx
@@ -526,6 +562,8 @@ Contributions are welcome. Please follow these steps:
 8. Open a Pull Request
 
 ### Development Setup
+
+Clone the repository and install dependencies to get started. The project uses standard npm scripts for testing, type checking, linting, and building. All checks must pass before submitting a pull request.
 
 ```bash
 git clone https://github.com/essabu/essabu-node.git

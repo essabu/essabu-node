@@ -13,6 +13,8 @@ Authentication, user management, roles, permissions, and multi-tenant configurat
 
 ## AuthApi
 
+Handles authentication flows including login, token refresh, logout, and password management. The `login()` method authenticates with email and password, returning access and refresh tokens. The `refreshToken()` method exchanges a refresh token for new credentials. Password reset follows a two-step flow: `forgotPassword()` sends a reset email, then `resetPassword()` completes the reset with the received token. The `verifyEmail()` method confirms a user's email address.
+
 ```typescript
 async login(data: LoginRequest): Promise<LoginResponse>
     // POST /api/identity/auth/login
@@ -34,6 +36,8 @@ async verifyEmail(data: VerifyEmailRequest): Promise<void>
 ```
 
 ## UsersApi
+
+Manages user accounts with full CRUD operations and lifecycle actions. The `me()` method returns the currently authenticated user's profile without requiring an ID. The `changePassword()` method requires both the current and new passwords for security. The `activate()` and `deactivate()` methods toggle the user's account status, controlling their ability to log in.
 
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<User>>
@@ -57,6 +61,8 @@ async deactivate(id: string): Promise<User>
 
 ## RolesApi
 
+Manages role-based access control with CRUD operations. Create roles with a name and a list of permission keys. The `listPermissions()` method returns all available permissions in the system, useful for building role management UIs. Roles are assigned to users to control their access across all modules.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Role>>
 async retrieve(id: string): Promise<Role>
@@ -69,6 +75,8 @@ async listPermissions(): Promise<Permission[]>
 ```
 
 ## TenantsApi
+
+Manages multi-tenant configuration with CRUD operations. Each tenant represents an isolated organization with its own data. The `current()` method returns the tenant associated with the current API key. Create new tenants for multi-organization deployments, and update tenant settings like name and plan.
 
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Tenant>>
@@ -84,6 +92,8 @@ async current(): Promise<Tenant>
 ## Code Examples
 
 ### Authentication
+
+Authenticate a user with email and password to receive access and refresh tokens. Use the refresh token to obtain new credentials when the access token expires. Initiate a password reset flow by sending a reset email, then complete it with the token received via email. Verify a user's email address with a verification token. Finally, call `logout()` to invalidate the current session.
 
 ```typescript
 import { Essabu } from 'essabu-node';
@@ -112,6 +122,8 @@ await client.identity.auth.logout();
 
 ### User Management
 
+List users with pagination, retrieve the current user's profile with `me()`, and create new user accounts with email, name, and role assignment. Change a user's password by providing both the current and new passwords. Toggle user account status with `activate()` and `deactivate()` to control login access.
+
 ```typescript
 const users = await client.identity.users.list({ page: 1, pageSize: 20 });
 const me = await client.identity.users.me();
@@ -134,6 +146,8 @@ await client.identity.users.deactivate(user.id);
 
 ### Roles and Permissions
 
+Fetch all available permissions in the system, then create a new role with a name and a subset of those permissions. Roles are assigned to users and determine what API endpoints and actions they can access. Returns the created Role object with its UUID.
+
 ```typescript
 const permissions = await client.identity.roles.listPermissions();
 const role = await client.identity.roles.create({
@@ -143,6 +157,8 @@ const role = await client.identity.roles.create({
 ```
 
 ### Tenants
+
+Retrieve the current tenant's profile associated with the API key, or create a new tenant for multi-organization setups. The `current()` method returns the Tenant object with name, plan, and status details. The `create()` method provisions a new isolated tenant environment.
 
 ```typescript
 const current = await client.identity.tenants.current();

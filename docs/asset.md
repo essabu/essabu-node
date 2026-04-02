@@ -12,6 +12,8 @@ Fixed asset management: assets, categories, and depreciation tracking.
 
 ## AssetsApi
 
+Provides full CRUD operations for fixed assets along with lifecycle actions. List assets with pagination, retrieve a single asset by ID, create assets with purchase details, update asset metadata, or soft-delete them. The `dispose()` method records asset disposal with a date, sale price, and reason. The `activate()` method transitions a draft asset to active status, enabling depreciation.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Asset>>
     // GET /api/asset/assets
@@ -37,6 +39,8 @@ async activate(id: string): Promise<Asset>
 
 ## AssetCategoriesApi
 
+Manages asset categories that define shared depreciation rules. Each category specifies a depreciation method (e.g., straight_line, declining_balance) and a useful life in months. Assets inherit these settings from their assigned category. Standard CRUD operations are supported with pagination on the list endpoint.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<AssetCategory>>
     // GET /api/asset/categories
@@ -56,6 +60,8 @@ async remove(id: string): Promise<void>
 
 ## DepreciationsApi
 
+Handles depreciation records and batch depreciation runs. List and retrieve individual depreciation entries. The `run()` method calculates and creates depreciation entries for all active assets in a category for a given period. The `post_()` method posts a depreciation entry to the accounting ledger, creating the corresponding journal entry.
+
 ```typescript
 async list(params?: PageRequest): Promise<PageResponse<Depreciation>>
     // GET /api/asset/depreciations
@@ -73,6 +79,8 @@ async post_(id: string): Promise<Depreciation>
 ## Code Examples
 
 ### Asset Registry
+
+Create an asset category with depreciation settings, then register a fixed asset under it. Activate the asset to enable depreciation tracking. Update asset metadata such as location, and list all assets with pagination. Each asset stores purchase date, price, serial number, and current location.
 
 ```typescript
 import { Essabu } from 'essabu-node';
@@ -109,6 +117,8 @@ const assets = await client.asset.assets.list({ page: 1, pageSize: 50 });
 
 ### Asset Disposal
 
+Record the disposal of a fixed asset by providing the disposal date, sale price, and reason. The method updates the asset status to "disposed" and records the disposal details. Returns the updated Asset object. Throws a `ValidationError` if the asset is not in an active state.
+
 ```typescript
 await client.asset.assets.dispose(asset.id, {
   disposalDate: '2031-01-15',
@@ -118,6 +128,8 @@ await client.asset.assets.dispose(asset.id, {
 ```
 
 ### Depreciation
+
+Run a batch depreciation calculation for all active assets in a category for a given accounting period. The `run()` method returns an array of created Depreciation entries. List all depreciation records with pagination, post individual entries to the accounting ledger, and retrieve detailed information about a specific depreciation entry.
 
 ```typescript
 // Run depreciation for a period
@@ -137,6 +149,8 @@ const entry = await client.asset.depreciations.retrieve(entries[0].id);
 ```
 
 ### Categories
+
+List all asset categories, update a category's name or useful life, and delete a category. The `list()` method returns a paginated response with all categories. The `remove()` method throws a `ConflictError` if the category still has associated assets.
 
 ```typescript
 const categories = await client.asset.categories.list();
