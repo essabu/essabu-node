@@ -13,24 +13,45 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v5
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
+      - name: Install & Build
+        run: npm ci && npm run build
       - name: Publish to npm
-        run: npm publish --access public --provenance
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  publish-github:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@essabu'
+      - name: Install & Build
+        run: npm ci && npm run build
+      - name: Publish to GitHub Packages
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  github-release:
+    runs-on: ubuntu-latest
+    needs: [publish-npm, publish-github]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
