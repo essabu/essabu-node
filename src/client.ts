@@ -9,6 +9,7 @@ import { PaymentClient } from './payment/client';
 import { EInvoiceClient } from './einvoice/client';
 import { ProjectClient } from './project/client';
 import { AssetClient } from './asset/client';
+import { ComplianceClient } from './compliance/client';
 
 /**
  * Essabu unified SDK client.
@@ -42,6 +43,7 @@ export class Essabu {
   private _einvoice?: EInvoiceClient;
   private _project?: ProjectClient;
   private _asset?: AssetClient;
+  private _compliance?: ComplianceClient;
 
   constructor(config: EssabuConfig) {
     if (!config.apiKey) {
@@ -100,5 +102,10 @@ export class Essabu {
   /** Asset Management module */
   get asset(): AssetClient {
     return (this._asset ??= new AssetClient(this.httpClient));
+  }
+
+  /** Compliance module */
+  get compliance(): ComplianceClient {
+    return (this._compliance ??= new ComplianceClient(this.httpClient));
   }
 }
