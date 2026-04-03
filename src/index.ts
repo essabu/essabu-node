@@ -7,6 +7,7 @@ export type { EssabuConfig } from './config';
 // Common
 export {
   EssabuError,
+  BadRequestError,
   AuthenticationError,
   ForbiddenError,
   NotFoundError,
@@ -35,6 +36,7 @@ export { PaymentClient } from './payment/client';
 export { EInvoiceClient } from './einvoice/client';
 export { ProjectClient } from './project/client';
 export { AssetClient } from './asset/client';
+export { ComplianceClient } from './compliance/client';
 
 // HR models
 export type {
@@ -98,6 +100,13 @@ export type {
   AssetCategory, CreateAssetCategoryRequest, UpdateAssetCategoryRequest,
   Depreciation, RunDepreciationRequest,
 } from './asset';
+
+// Compliance models
+export type {
+  Audit, CreateAuditRequest, UpdateAuditRequest,
+  Policy, CreatePolicyRequest, UpdatePolicyRequest,
+  Incident, CreateIncidentRequest, UpdateIncidentRequest,
+} from './compliance';
 
 // Re-export Essabu as named export for convenience
 import { Essabu } from './client';

@@ -3,6 +3,7 @@ import { DEFAULT_CONFIG } from '../config';
 import { buildAuthHeaders } from './auth';
 import {
   AuthenticationError,
+  BadRequestError,
   ConflictError,
   EssabuError,
   ForbiddenError,
@@ -148,6 +149,8 @@ export class HttpClient implements HttpClientInterface {
     const message = body.message ?? 'Unknown error';
 
     switch (statusCode) {
+      case 400:
+        return new BadRequestError(message, requestId);
       case 401:
         return new AuthenticationError(message, requestId);
       case 403:

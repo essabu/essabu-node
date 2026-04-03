@@ -29,6 +29,16 @@ export class EssabuError extends Error {
 }
 
 /**
+ * Thrown when the request is malformed or invalid (400).
+ */
+export class BadRequestError extends EssabuError {
+  constructor(message = 'Bad request', requestId?: string) {
+    super(message, 400, 'bad_request', requestId);
+    this.name = 'BadRequestError';
+  }
+}
+
+/**
  * Thrown when authentication fails (401).
  */
 export class AuthenticationError extends EssabuError {
