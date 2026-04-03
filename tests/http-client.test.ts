@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { HttpClient } from '../src/common/http-client';
 import {
+  BadRequestError,
   AuthenticationError,
   NotFoundError,
   ValidationError,
@@ -84,6 +85,15 @@ describe('HttpClient', () => {
 
     const result = await client.request({ method: 'DELETE', path: '/api/test/1' });
     expect(result).toBeUndefined();
+  });
+
+  it('should throw BadRequestError on 400', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'Invalid request body' }), { status: 400 }),
+    );
+
+    await expect(client.request({ method: 'POST', path: '/api/test' }))
+      .rejects.toThrow(BadRequestError);
   });
 
   it('should throw AuthenticationError on 401', async () => {

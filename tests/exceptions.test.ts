@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   EssabuError,
+  BadRequestError,
   AuthenticationError,
   ForbiddenError,
   NotFoundError,
@@ -21,6 +22,21 @@ describe('Exceptions', () => {
     expect(error.requestId).toBe('req-123');
     expect(error.details).toEqual({ foo: 'bar' });
     expect(error).toBeInstanceOf(Error);
+  });
+
+  it('should create BadRequestError with defaults', () => {
+    const error = new BadRequestError();
+    expect(error.statusCode).toBe(400);
+    expect(error.code).toBe('bad_request');
+    expect(error.name).toBe('BadRequestError');
+    expect(error.message).toBe('Bad request');
+  });
+
+  it('should create BadRequestError with custom message', () => {
+    const error = new BadRequestError('Invalid JSON body', 'req-456');
+    expect(error.statusCode).toBe(400);
+    expect(error.message).toBe('Invalid JSON body');
+    expect(error.requestId).toBe('req-456');
   });
 
   it('should create AuthenticationError with defaults', () => {
